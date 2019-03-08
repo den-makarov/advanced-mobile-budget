@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <cmath>
 
+#include "dates.h"
+
 struct IndexSegment {
   std::size_t left;
   std::size_t right;
@@ -22,5 +24,7 @@ struct IndexSegment {
   IndexSegment IntersectSegments(IndexSegment other) const;
   bool AreSegmentsIntersected(IndexSegment other) const;
 };
+
+IndexSegment MakeDateSegment(const Date& date_from, const Date& date_to, const Date& start_date);
 
 #endif // INDEXSEGMENT_H

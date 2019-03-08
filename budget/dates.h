@@ -35,5 +35,6 @@ private:
 };
 
 int ComputeDaysDiff(const Date& date_to, const Date& date_from);
+size_t ComputeDayIndex(const Date& date, const Date& startdate);
 
 #endif // DATES_H

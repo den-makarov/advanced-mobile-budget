@@ -27,3 +27,6 @@ int ComputeDaysDiff(const Date& date_to, const Date& date_from) {
   return static_cast<int>((timestamp_to - timestamp_from) / SECONDS_IN_DAY);
 }
 
+size_t ComputeDayIndex(const Date& date, const Date& startdate) {
+  return static_cast<size_t>(ComputeDaysDiff(date, startdate));
+}
