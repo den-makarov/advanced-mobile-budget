@@ -20,6 +20,8 @@
 #include "indexsegment.h"
 #include "bulkupdater.h"
 #include "segmenttree.h"
+#include "budgetmanager.h"
+#include "request.h"
 
 using namespace std;
 
@@ -27,61 +29,11 @@ static const Date START_DATE = Date::FromString("2000-01-01");
 static const Date END_DATE = Date::FromString("2100-01-01");
 static const size_t DAY_COUNT = static_cast<size_t>(ComputeDaysDiff(END_DATE, START_DATE));
 
-size_t ComputeDayIndex(const Date& date) {
-  return static_cast<size_t>(ComputeDaysDiff(date, START_DATE));
-}
-
-IndexSegment MakeDateSegment(const Date& date_from, const Date& date_to) {
-  return {ComputeDayIndex(date_from), ComputeDayIndex(date_to) + 1};
-}
-
-class BudgetManager : public SummingSegmentTree<MoneyState, BulkLinearUpdater<MoneyState>> {
-public:
-    BudgetManager() : SummingSegmentTree(DAY_COUNT) {}
-//    auto MakeDateRange(const Date& date_from, const Date& date_to) const {
-//      const auto segment = MakeDateSegment(date_from, date_to);
-//      return Range(begin() + segment.left, begin() + segment.right);
-//    }
-};
-
-struct Request;
-using RequestHolder = unique_ptr<Request>;
-
-struct Request {
-  enum class Type {
-    COMPUTE_INCOME,
-    EARN,
-    SPEND,
-    PAY_TAX
-  };
-
-  Request(Type type) : type(type) {}
-  static RequestHolder Create(Type type);
-  virtual void ParseFrom(string_view input) = 0;
-  virtual ~Request();
-//  virtual ~Request() = default;
-
-  const Type type;
-};
-
-Request::~Request() {}
-
 const unordered_map<string_view, Request::Type> STR_TO_REQUEST_TYPE = {
     {"ComputeIncome", Request::Type::COMPUTE_INCOME},
     {"Earn", Request::Type::EARN},
     {"Spend", Request::Type::SPEND},
     {"PayTax", Request::Type::PAY_TAX},
-};
-
-template <typename ResultType>
-struct ReadRequest : Request {
-  using Request::Request;
-  virtual ResultType Process(const BudgetManager& manager) const = 0;
-};
-
-struct ModifyRequest : Request {
-  using Request::Request;
-  virtual void Process(BudgetManager& manager) const = 0;
 };
 
 struct ComputeIncomeRequest : ReadRequest<double> {
@@ -91,7 +43,7 @@ struct ComputeIncomeRequest : ReadRequest<double> {
   double Process(const BudgetManager& manager) const override {
 //    const auto range = manager.MakeDateRange(date_from, date_to);
 //    return accumulate(begin(range), end(range), MoneyState{}).ComputeIncome();
-    return manager.ComputeSum(MakeDateSegment(date_from, date_to));
+    return manager.ComputeSum(MakeDateSegment(date_from, date_to, START_DATE));
   }
 
   Date date_from = START_DATE;
@@ -117,7 +69,7 @@ struct AddMoneyRequest : ModifyRequest {
   }
 
   void Process(BudgetManager& manager) const override {
-    const auto date_segment = MakeDateSegment(date_from, date_to);
+    const auto date_segment = MakeDateSegment(date_from, date_to, START_DATE);
     const double daily_income = income * 1.0 / date_segment.length();
     manager.AddBulkOperation(date_segment, BulkMoneyAdder{daily_income});
     //    const auto date_range = manager.MakeDateRange(date_from, date_to);
@@ -142,7 +94,7 @@ struct PayTaxRequest : ModifyRequest {
   void ParseFrom(string_view input) override;
 
   void Process(BudgetManager& manager) const override {
-    manager.AddBulkOperation(MakeDateSegment(date_from, date_to), BulkTaxApplier{1});
+    manager.AddBulkOperation(MakeDateSegment(date_from, date_to, START_DATE), BulkTaxApplier{1});
 //    for (auto& money : manager.MakeDateRange(date_from, date_to)) {
 //      money.earned *= 1 - percentage / 100.0;
 //    }
@@ -224,7 +176,7 @@ vector<RequestHolder> ReadRequests(istream& in_stream = cin) {
 
 vector<double> ProcessRequests(const vector<RequestHolder>& requests) {
   vector<double> responses;
-  BudgetManager manager;
+  BudgetManager manager(DAY_COUNT);
   for (const auto& request_holder : requests) {
     if (request_holder->type == Request::Type::COMPUTE_INCOME) {
       const auto& request = static_cast<const ComputeIncomeRequest&>(*request_holder);
