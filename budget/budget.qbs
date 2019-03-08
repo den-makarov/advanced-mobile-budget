@@ -8,7 +8,7 @@ CppApplication {
 //        "ref/date.cpp",
 //        "ref/main.cpp",
 /* My advanced solution based on author's template */
-        "budget_good_base.cpp",
+        "main.cpp",
         "src/stringhelper.cpp",
         "src/dates.cpp",
         "src/moneystate.cpp",
