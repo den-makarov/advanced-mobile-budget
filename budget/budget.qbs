@@ -13,7 +13,8 @@ CppApplication {
         "dates.cpp",
         "moneystate.cpp",
         "indexsegment.cpp",
-        "compute_request.cpp"
+        "compute_request.cpp",
+        "add_request.cpp"
 /* Author's solution for answers referencing */
 //        "desktop_template.cpp"
     ]
