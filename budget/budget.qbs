@@ -12,6 +12,7 @@ CppApplication {
         "stringhelper.cpp",
         "dates.cpp",
         "moneystate.cpp",
+        "indexsegment.cpp",
 /* Author's solution for answers referencing */
 //        "desktop_template.cpp"
     ]

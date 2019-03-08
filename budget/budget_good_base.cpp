@@ -17,82 +17,14 @@
 #include "stringhelper.h"
 #include "dates.h"
 #include "moneystate.h"
+#include "indexsegment.h"
+#include "bulkupdater.h"
 
 using namespace std;
 
 static const Date START_DATE = Date::FromString("2000-01-01");
 static const Date END_DATE = Date::FromString("2100-01-01");
 static const size_t DAY_COUNT = static_cast<size_t>(ComputeDaysDiff(END_DATE, START_DATE));
-
-struct IndexSegment {
-  size_t left;
-  size_t right;
-
-  size_t length() const {
-    return right - left;
-  }
-  bool empty() const {
-    return length() == 0;
-  }
-
-  bool Contains(IndexSegment other) const {
-    return left <= other.left && other.right <= right;
-  }
-};
-
-IndexSegment IntersectSegments(IndexSegment lhs, IndexSegment rhs) {
-  const size_t left = max(lhs.left, rhs.left);
-  const size_t right = min(lhs.right, rhs.right);
-  return {left, max(left, right)};
-}
-
-bool AreSegmentsIntersected(IndexSegment lhs, IndexSegment rhs) {
-  return !(lhs.right <= rhs.left || rhs.right <= lhs.left);
-}
-
-struct BulkMoneyAdder {
-  double delta = 0.0;
-};
-
-constexpr uint8_t TAX_PERCENTAGE = 13;
-
-struct BulkTaxApplier {
-  static constexpr double FACTOR = 1.0 - TAX_PERCENTAGE / 100.0;
-  uint32_t count = 0;
-
-  double ComputeFactor() const {
-    return pow(FACTOR, count);
-  }
-};
-
-template <typename Data>
-class BulkLinearUpdater {
-public:
-  BulkLinearUpdater() = default;
-
-  BulkLinearUpdater(const BulkMoneyAdder& add)
-      : add_(add)
-  {}
-
-  BulkLinearUpdater(const BulkTaxApplier& tax)
-      : tax_(tax)
-  {}
-
-  void CombineWith(const BulkLinearUpdater& other) {
-    tax_.count += other.tax_.count;
-    add_.delta = add_.delta * other.tax_.ComputeFactor() + other.add_.delta;
-  }
-
-  Data Collapse(Data origin, IndexSegment segment) const {
-    return origin * tax_.ComputeFactor() + add_.delta * segment.length();
-  }
-
-private:
-  // apply tax first, then add
-  BulkTaxApplier tax_;
-  BulkMoneyAdder add_;
-};
-
 
 template <typename Data, typename BulkOperation>
 class SummingSegmentTree {
@@ -148,7 +80,7 @@ private:
 
   template <typename Visitor>
   static typename Visitor::ResultType TraverseWithQuery(const NodeHolder& node, IndexSegment query_segment, Visitor visitor) {
-    if (!node || !AreSegmentsIntersected(node->segment, query_segment)) {
+    if (!node || !node->segment.AreSegmentsIntersected(query_segment)) {
       return visitor.ProcessEmpty(node);
     } else {
       PropagateBulkOperation(node);
