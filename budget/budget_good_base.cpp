@@ -22,38 +22,13 @@
 #include "segmenttree.h"
 #include "budgetmanager.h"
 #include "request.h"
+#include "compute_request.h"
 
 using namespace std;
 
 static const Date START_DATE = Date::FromString("2000-01-01");
 static const Date END_DATE = Date::FromString("2100-01-01");
 static const size_t DAY_COUNT = static_cast<size_t>(ComputeDaysDiff(END_DATE, START_DATE));
-
-const unordered_map<string_view, Request::Type> STR_TO_REQUEST_TYPE = {
-    {"ComputeIncome", Request::Type::COMPUTE_INCOME},
-    {"Earn", Request::Type::EARN},
-    {"Spend", Request::Type::SPEND},
-    {"PayTax", Request::Type::PAY_TAX},
-};
-
-struct ComputeIncomeRequest : ReadRequest<double> {
-  ComputeIncomeRequest() : ReadRequest(Type::COMPUTE_INCOME) {}
-  void ParseFrom(string_view input) override;
-
-  double Process(const BudgetManager& manager) const override {
-//    const auto range = manager.MakeDateRange(date_from, date_to);
-//    return accumulate(begin(range), end(range), MoneyState{}).ComputeIncome();
-    return manager.ComputeSum(MakeDateSegment(date_from, date_to, START_DATE));
-  }
-
-  Date date_from = START_DATE;
-  Date date_to = START_DATE;
-};
-
-void ComputeIncomeRequest::ParseFrom(string_view input) {
-  date_from = Date::FromString(ReadToken(input));
-  date_to = Date::FromString(input);
-}
 
 template <int SIGN>
 struct AddMoneyRequest : ModifyRequest {
@@ -115,7 +90,7 @@ void PayTaxRequest::ParseFrom(string_view input) {
 RequestHolder Request::Create(Request::Type type) {
   switch (type) {
     case Request::Type::COMPUTE_INCOME:
-      return make_unique<ComputeIncomeRequest>();
+      return make_unique<ComputeIncomeRequest>(START_DATE);
     case Request::Type::EARN:
 //      return make_unique<EarnRequest>();
       return make_unique<AddMoneyRequest<+1>>();
@@ -127,6 +102,13 @@ RequestHolder Request::Create(Request::Type type) {
   }
   return nullptr;
 }
+
+const unordered_map<string_view, Request::Type> STR_TO_REQUEST_TYPE = {
+    {"ComputeIncome", Request::Type::COMPUTE_INCOME},
+    {"Earn", Request::Type::EARN},
+    {"Spend", Request::Type::SPEND},
+    {"PayTax", Request::Type::PAY_TAX},
+};
 
 template <typename Number>
 Number ReadNumberOnLine(istream& stream) {

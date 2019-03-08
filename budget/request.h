@@ -19,13 +19,10 @@ struct Request {
   Request(Type type) : type(type) {}
   static RequestHolder Create(Type type);
   virtual void ParseFrom(std::string_view input) = 0;
-  virtual ~Request();
-//  virtual ~Request() = default;
+  virtual ~Request() = default;
 
   const Type type;
 };
-
-Request::~Request() {}
 
 template <typename ResultType>
 struct ReadRequest : Request {
