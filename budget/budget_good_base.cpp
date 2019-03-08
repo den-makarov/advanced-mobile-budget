@@ -16,43 +16,13 @@
 #include "range.h"
 #include "stringhelper.h"
 #include "dates.h"
+#include "moneystate.h"
 
 using namespace std;
 
 static const Date START_DATE = Date::FromString("2000-01-01");
 static const Date END_DATE = Date::FromString("2100-01-01");
 static const size_t DAY_COUNT = static_cast<size_t>(ComputeDaysDiff(END_DATE, START_DATE));
-
-struct MoneyState {
-  double earned = 0.0;
-  double spent = 0.0;
-
-  double ComputeIncome() const {
-    return earned - spent;
-  }
-
-  MoneyState& operator+=(const MoneyState& other) {
-    earned += other.earned;
-    spent += other.spent;
-    return *this;
-  }
-
-  MoneyState operator+(const MoneyState& other) const {
-    return MoneyState(*this) += other;
-  }
-
-  operator double() {
-    return earned + spent;
-  }
-
-  MoneyState operator*(double factor) const {
-    return {earned * factor, spent * factor};
-  }
-};
-
-ostream& operator<<(ostream& stream, const MoneyState& state) {
-  return stream << "{+" << state.earned << ", -" << state.spent << "}";
-}
 
 struct IndexSegment {
   size_t left;

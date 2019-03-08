@@ -7,11 +7,13 @@ CppApplication {
 //        "budget.cpp",
 //        "date.cpp",
 //        "main.cpp",
-//        "budget_good_base.cpp",
-//        "stringhelper.cpp",
-//        "dates.cpp"
+/* My advanced solution based on author's template */
+        "budget_good_base.cpp",
+        "stringhelper.cpp",
+        "dates.cpp",
+        "moneystate.cpp",
 /* Author's solution for answers referencing */
-        "desktop_template.cpp"
+//        "desktop_template.cpp"
     ]
     cpp.driverFlags: [
         "-std=c++1z"
