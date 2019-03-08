@@ -1,15 +1,6 @@
-#include <cmath>
-#include <cstdint>
-#include <exception>
 #include <iostream>
 #include <iomanip>
-#include <iterator>
-#include <memory>
-#include <optional>
-#include <sstream>
 #include <string>
-#include <system_error>
-#include <type_traits>
 #include <unordered_map>
 #include <vector>
 
@@ -24,6 +15,7 @@
 #include "request.h"
 #include "compute_request.h"
 #include "add_request.h"
+#include "pay_tax_request.h"
 
 using namespace std;
 
@@ -31,50 +23,27 @@ static const Date START_DATE = Date::FromString("2000-01-01");
 static const Date END_DATE = Date::FromString("2100-01-01");
 static const size_t DAY_COUNT = static_cast<size_t>(ComputeDaysDiff(END_DATE, START_DATE));
 
-struct PayTaxRequest : ModifyRequest {
-  PayTaxRequest() : ModifyRequest(Type::PAY_TAX) {}
-  void ParseFrom(string_view input) override;
-
-  void Process(BudgetManager& manager) const override {
-    manager.AddBulkOperation(MakeDateSegment(date_from, date_to, START_DATE), BulkTaxApplier{1});
-//    for (auto& money : manager.MakeDateRange(date_from, date_to)) {
-//      money.earned *= 1 - percentage / 100.0;
-//    }
-  }
-
-  Date date_from = START_DATE;
-  Date date_to = START_DATE;
-  uint8_t percentage = 0;
-};
-
-void PayTaxRequest::ParseFrom(string_view input) {
-  date_from = Date::FromString(ReadToken(input));
-//  date_to = Date::FromString(input);
-  date_to = Date::FromString(ReadToken(input));
-  percentage = ConvertToInt(input);
-}
-
 RequestHolder Request::Create(Request::Type type) {
   switch (type) {
-    case Request::Type::COMPUTE_INCOME:
-      return make_unique<ComputeIncomeRequest>(START_DATE);
-    case Request::Type::EARN:
-//      return make_unique<EarnRequest>();
-      return make_unique<AddMoneyRequest<+1>>(START_DATE);
-    case Request::Type::SPEND:
-//      return nullptr;
-      return make_unique<AddMoneyRequest<-1>>(START_DATE);
-    case Request::Type::PAY_TAX:
-      return make_unique<PayTaxRequest>();
+  case Request::Type::COMPUTE_INCOME:
+    return make_unique<ComputeIncomeRequest>(START_DATE);
+  case Request::Type::EARN:
+    //      return make_unique<EarnRequest>();
+    return make_unique<AddMoneyRequest<+1>>(START_DATE);
+  case Request::Type::SPEND:
+    //      return nullptr;
+    return make_unique<AddMoneyRequest<-1>>(START_DATE);
+  case Request::Type::PAY_TAX:
+    return make_unique<PayTaxRequest>(START_DATE);
   }
   return nullptr;
 }
 
 const unordered_map<string_view, Request::Type> STR_TO_REQUEST_TYPE = {
-    {"ComputeIncome", Request::Type::COMPUTE_INCOME},
-    {"Earn", Request::Type::EARN},
-    {"Spend", Request::Type::SPEND},
-    {"PayTax", Request::Type::PAY_TAX},
+  {"ComputeIncome", Request::Type::COMPUTE_INCOME},
+  {"Earn", Request::Type::EARN},
+  {"Spend", Request::Type::SPEND},
+  {"PayTax", Request::Type::PAY_TAX},
 };
 
 template <typename Number>

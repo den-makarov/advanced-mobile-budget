@@ -14,7 +14,8 @@ CppApplication {
         "moneystate.cpp",
         "indexsegment.cpp",
         "compute_request.cpp",
-        "add_request.cpp"
+        "add_request.cpp",
+        "pay_tax_request.cpp"
 /* Author's solution for answers referencing */
 //        "desktop_template.cpp"
     ]
