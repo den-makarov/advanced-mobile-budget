@@ -4,24 +4,25 @@ CppApplication {
     consoleApplication: true
     files: [
 /* My solution for answers referencing */
-//        "budget.cpp",
-//        "date.cpp",
-//        "main.cpp",
+//        "ref/budget.cpp",
+//        "ref/date.cpp",
+//        "ref/main.cpp",
 /* My advanced solution based on author's template */
         "budget_good_base.cpp",
-        "stringhelper.cpp",
-        "dates.cpp",
-        "moneystate.cpp",
-        "indexsegment.cpp",
-        "compute_request.cpp",
-        "add_request.cpp",
-        "pay_tax_request.cpp"
+        "src/stringhelper.cpp",
+        "src/dates.cpp",
+        "src/moneystate.cpp",
+        "src/indexsegment.cpp",
+        "src/compute_request.cpp",
+        "src/add_request.cpp",
+        "src/pay_tax_request.cpp"
 /* Author's solution for answers referencing */
-//        "desktop_template.cpp"
+//        "ref/desktop_template.cpp"
     ]
     cpp.driverFlags: [
         "-std=c++1z"
     ]
+    cpp.includePaths: ["inc"]
 
     Group {     // Properties for the produced executable
         fileTagsFilter: "application"
