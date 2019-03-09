@@ -27,4 +27,5 @@ struct IndexSegment {
 
 IndexSegment MakeDateSegment(const Date& date_from, const Date& date_to, const Date& start_date);
 
+std::ostream& operator<<(std::ostream& out, const IndexSegment& segment);
 #endif // INDEXSEGMENT_H

@@ -2,14 +2,15 @@
 #define MONEYSTATE_H
 
 #include <iostream>
+#include <iomanip>
 
 struct MoneyState {
   double earned = 0.0;
   double spent = 0.0;
 
-  double ComputeIncome() const {
+  /*double ComputeIncome() const {
     return earned - spent;
-  }
+  }*/
 
   MoneyState& operator+=(const MoneyState& other) {
     earned += other.earned;
@@ -18,7 +19,7 @@ struct MoneyState {
   }
 
   MoneyState operator+(const MoneyState& other) const {
-    return MoneyState(*this) += other;
+    return {earned + other.earned, spent + other.spent};
   }
 
   operator double() {
@@ -26,7 +27,15 @@ struct MoneyState {
   }
 
   MoneyState operator*(double factor) const {
-    return {earned * factor, spent * factor};
+    return {earned * factor, spent};
+  }
+
+  MoneyState operator+(double amount) const {
+    return {earned + amount, spent};
+  }
+
+  MoneyState operator-(double amount) const {
+    return {earned, spent + amount};
   }
 };
 

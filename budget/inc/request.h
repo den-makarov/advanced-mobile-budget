@@ -28,11 +28,13 @@ template <typename ResultType>
 struct ReadRequest : Request {
   using Request::Request;
   virtual ResultType Process(const BudgetManager& manager) const = 0;
+  virtual ~ReadRequest() = default;
 };
 
 struct ModifyRequest : Request {
   using Request::Request;
   virtual void Process(BudgetManager& manager) const = 0;
+  virtual ~ModifyRequest() = default;
 };
 
 #endif // REQUEST_H

@@ -18,14 +18,17 @@ struct AddMoneyRequest : ModifyRequest {
   void ParseFrom(std::string_view input) override {
     date_from = Date::FromString(ReadToken(input));
     date_to = Date::FromString(ReadToken(input));
-    income = static_cast<size_t>(ConvertToInt(input));
-    //  value = ConvertToInt(input);
+    amount = static_cast<size_t>(ConvertToInt(input));
   }
 
   void Process(BudgetManager& manager) const override {
     const auto date_segment = MakeDateSegment(date_from, date_to, start_date);
-    const double daily_income = income * 1.0 / date_segment.length();
-    manager.AddBulkOperation(date_segment, BulkMoneyAdder{daily_income});
+    const double daily_income = amount * 1.0 / date_segment.length();
+    if(type == Type::EARN) {
+      manager.AddBulkOperation(date_segment, BulkMoneyAdder{daily_income});
+    } else {
+      manager.AddBulkOperation(date_segment, BulkMoneySubber{daily_income});
+    }
     //    const auto date_range = manager.MakeDateRange(date_from, date_to);
     //    const double daily_value = value * 1.0 / size(date_range);
     //    const MoneyState daily_change =
@@ -40,8 +43,7 @@ struct AddMoneyRequest : ModifyRequest {
   const Date start_date;
   Date date_from;
   Date date_to;
-  size_t income = 0;
-  //  size_t value = 0;
+  size_t amount = 0;
 };
 
 #endif // ADD_REQUEST_H

@@ -18,6 +18,11 @@ public:
     this->TraverseWithQuery(root_, segment, AddBulkOperationVisitor{operation});
   }
 
+  std::ostream& operator<<(std::ostream& out) {
+    root_.get()->operator<<(out);
+    return out;
+  }
+
 private:
   struct Node;
   using NodeHolder = std::unique_ptr<Node>;
@@ -28,6 +33,18 @@ private:
     IndexSegment segment;
     Data data;
     BulkOperation postponed_bulk_operation;
+    std::ostream& operator<<(std::ostream& out) {
+      out << segment << data;
+      postponed_bulk_operation.operator<<(out);
+      out << std::endl;
+      if(left) {
+        left.get()->operator<<(out);
+      }
+      if(right) {
+        right.get()->operator<<(out);
+      }
+      return out;
+    }
   };
 
   NodeHolder root_;
@@ -72,7 +89,6 @@ private:
           return visitor.ProcessPartial(node, query_segment);
         } else {
           return visitor.ProcessPartial(
-              node, query_segment,
               TraverseWithQuery(node->left, query_segment, visitor),
               TraverseWithQuery(node->right, query_segment, visitor)
           );
@@ -93,7 +109,8 @@ private:
       return node->data;
     }
 
-    Data ProcessPartial(const NodeHolder&, IndexSegment, const Data& left_result, const Data& right_result) const {
+    Data ProcessPartial(const Data& left_result, const Data& right_result) const {
+    //Data ProcessPartial(const NodeHolder&, IndexSegment, const Data& left_result, const Data& right_result) const {
       return left_result + right_result;
     }
   };

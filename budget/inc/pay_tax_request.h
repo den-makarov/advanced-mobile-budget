@@ -13,7 +13,7 @@ struct PayTaxRequest : ModifyRequest {
   void ParseFrom(std::string_view input) override;
 
   void Process(BudgetManager& manager) const override {
-    manager.AddBulkOperation(MakeDateSegment(date_from, date_to, start_date), BulkTaxApplier{1});
+    manager.AddBulkOperation(MakeDateSegment(date_from, date_to, start_date), BulkTaxApplier{1, percentage});
     //    for (auto& money : manager.MakeDateRange(date_from, date_to)) {
     //      money.earned *= 1 - percentage / 100.0;
     //    }
@@ -22,7 +22,7 @@ struct PayTaxRequest : ModifyRequest {
   const Date start_date;
   Date date_from;
   Date date_to;
-  uint8_t percentage = 0;
+  size_t percentage = 0;
 };
 
 #endif // PAY_TAX_REQUEST_H

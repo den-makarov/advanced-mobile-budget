@@ -3,6 +3,7 @@
 using namespace std;
 
 ostream& operator<<(ostream& stream, const MoneyState& state) {
-  return stream << "{+" << state.earned << ", -" << state.spent << "}";
+  return stream << "{+" << std::setw(7) << state.earned
+                << ", -" << std::setw(7) << state.spent << "} ";
 }
 

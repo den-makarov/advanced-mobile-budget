@@ -23,6 +23,7 @@ CppApplication {
         "-std=c++1z"
     ]
     cpp.includePaths: ["inc"]
+    cpp.optimization: "none"
 
     Group {     // Properties for the produced executable
         fileTagsFilter: "application"

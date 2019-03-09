@@ -19,8 +19,10 @@
 
 using namespace std;
 
-static const Date START_DATE = Date::FromString("2000-01-01");
-static const Date END_DATE = Date::FromString("2100-01-01");
+static const Date START_DATE = Date::FromString("2001-02-01");
+static const Date END_DATE = Date::FromString("2001-02-08");
+//static const Date START_DATE = Date::FromString("2000-01-01");
+//static const Date END_DATE = Date::FromString("2100-01-01");
 static const size_t DAY_COUNT = static_cast<size_t>(ComputeDaysDiff(END_DATE, START_DATE));
 
 RequestHolder Request::Create(Request::Type type) {
@@ -102,6 +104,7 @@ vector<double> ProcessRequests(const vector<RequestHolder>& requests) {
     } else {
       const auto& request = static_cast<const ModifyRequest&>(*request_holder);
       request.Process(manager);
+      manager.operator<<(cout);
     }
   }
   return responses;
