@@ -8,16 +8,20 @@ CppApplication {
 //        "ref/date.cpp",
 //        "ref/main.cpp",
 /* My advanced solution based on author's template */
-        "main.cpp",
-        "src/stringhelper.cpp",
-        "src/dates.cpp",
-        "src/moneystate.cpp",
-        "src/indexsegment.cpp",
-        "src/compute_request.cpp",
-        "src/add_request.cpp",
-        "src/pay_tax_request.cpp"
+//        "main.cpp",
+//        "src/stringhelper.cpp",
+//        "src/dates.cpp",
+//        "src/moneystate.cpp",
+//        "src/indexsegment.cpp",
+//        "src/compute_request.cpp",
+//        "src/add_request.cpp",
+//        "src/pay_tax_request.cpp"
 /* Author's solution for answers referencing */
 //        "ref/desktop_template.cpp"
+/* Author's fast solution for answers referencing */
+        "budget_bad_base.cpp",
+        "src/stringhelper.cpp",
+        "src/dates.cpp"
     ]
     cpp.driverFlags: [
         "-std=c++1z"
