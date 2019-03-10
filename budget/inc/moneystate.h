@@ -23,7 +23,7 @@ struct MoneyState {
   }
 
   operator double() {
-    return earned + spent;
+    return earned - spent;
   }
 
   MoneyState operator*(double factor) const {

@@ -21,7 +21,7 @@ struct IndexSegment {
     return left <= other.left && other.right <= right;
   }
 
-  IndexSegment IntersectSegments(IndexSegment other) const;
+  //IndexSegment IntersectSegments(IndexSegment other) const;
   bool AreSegmentsIntersected(IndexSegment other) const;
 };
 

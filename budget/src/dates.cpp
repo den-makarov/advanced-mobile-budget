@@ -12,12 +12,12 @@ void ValidateBounds(Number number_to_check, Number min_value, Number max_value) 
 }
 
 Date Date::FromString(string_view str) {
-    const int year = ConvertToInt(ReadToken(str, "-"));
-    const int month = ConvertToInt(ReadToken(str, "-"));
-    ValidateBounds(month, 1, 12);
-    const int day = ConvertToInt(str);
-    ValidateBounds(day, 1, 31);
-    return {year, month, day};
+  const int year = ConvertToInt(ReadToken(str, "-"));
+  const int month = ConvertToInt(ReadToken(str, "-"));
+  ValidateBounds(month, 1, 12);
+  const int day = ConvertToInt(str);
+  ValidateBounds(day, 1, 31);
+  return {year, month, day};
 }
 
 int ComputeDaysDiff(const Date& date_to, const Date& date_from) {

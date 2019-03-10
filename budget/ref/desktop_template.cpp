@@ -371,7 +371,7 @@ void PrintResponses(const vector<double>& responses, ostream& stream = cout) {
 }
 
 int main() {
-  cout.precision(25);
+  cout.precision(6);
   const auto requests = ReadRequests();
   const auto responses = ProcessRequests(requests);
   PrintResponses(responses);
